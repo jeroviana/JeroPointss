@@ -19,7 +19,7 @@
     color: #444; 
     margin: 0; 
     min-height: 100vh; 
-    padding-bottom: 120px; /* Espacio para que los botones no tapen la lista */
+    padding-bottom: 120px;
   }
   
   header { 
@@ -65,7 +65,7 @@
   }
   .sister-card:hover { transform: scale(1.02); background: var(--rosa-principal); color: white; }
 
-  /* BOTONES INFERIORES ARREGLADOS */
+  /* BOTONES INFERIORES */
   .footer-btns {
     position: fixed; bottom: 20px; left: 0; width: 100%;
     display: flex; justify-content: center; gap: 10px;
@@ -79,25 +79,40 @@
   }
   .btn-earn { background: #4caf50; }
   .btn-lose { background: #f44336; }
-  .btn-fixed:active { transform: scale(0.95); }
 
-  /* Modales y Inputs */
+  /* Modales */
   .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center; z-index: 1000; }
   .modal-content { background: white; padding: 30px; border-radius: 25px; width: 85%; max-width: 350px; text-align: center; position: relative; }
   
-  /* INPUT CORREGIDO Y CENTRADO */
   input { 
     width: 100%; max-width: 250px; padding: 12px; margin: 20px auto; 
     border: 2px solid var(--rosa-principal); border-radius: 12px; 
     text-align: center; font-size: 1.1rem; outline: none; display: block;
-    font-family: 'Montserrat', sans-serif;
   }
-  input::placeholder { color: transparent; } /* Eliminamos los puntos */
 
   .btn-action { background: var(--rosa-fuerte); color: white; border: none; padding: 12px; border-radius: 20px; cursor: pointer; font-weight: 600; width: 100%; }
-  
   .close-x { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; color: #ccc; cursor: pointer; }
-  .detail-container { max-height: 250px; overflow-y: auto; margin-top: 15px; }
+  .detail-container { max-height: 350px; overflow-y: auto; margin-top: 15px; padding-right: 5px; }
+
+  /* --- ESTILOS DE LA TIMELINE --- */
+  .timeline { position: relative; padding-left: 30px; margin: 20px 0; text-align: left; }
+  .timeline::before {
+    content: ''; position: absolute; left: 10px; top: 0; width: 3px; height: 100%;
+    background: var(--rosa-principal); border-radius: 5px;
+  }
+  .timeline-item { position: relative; margin-bottom: 25px; }
+  .timeline-dot {
+    position: absolute; left: -27px; top: 5px; width: 14px; height: 14px;
+    background: white; border: 3px solid var(--rosa-fuerte); border-radius: 50%; z-index: 2;
+  }
+  .timeline-date { font-size: 0.7rem; font-weight: 700; color: #b3b3b3; margin-bottom: 5px; display: block; }
+  .timeline-content {
+    background: #fff; padding: 12px; border-radius: 15px; border: 1px solid #f0f0f0;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.02); display: flex; justify-content: space-between; align-items: center;
+  }
+  .timeline-motivo { font-size: 0.85rem; color: #555; font-weight: 500; }
+  .timeline-pts { font-weight: 700; font-size: 0.95rem; }
+
   .hidden { display: none !important; }
   .loading { text-align: center; padding: 100px; color: var(--rosa-fuerte); }
 </style>
@@ -137,7 +152,7 @@
 <div id="historyModal" class="modal-overlay hidden" onclick="this.classList.add('hidden')">
   <div class="modal-content" style="max-width: 450px;" onclick="event.stopPropagation()">
     <span class="close-x" onclick="document.getElementById('historyModal').classList.add('hidden')">&times;</span>
-    <h2 id="histTitle" style="font-family: 'Playfair Display', serif; color: var(--rosa-fuerte);"></h2>
+    <h2 id="histTitle" style="font-family: 'Playfair Display', serif; color: var(--rosa-fuerte); margin-bottom: 15px;"></h2>
     <div id="histBody" class="detail-container"></div>
   </div>
 </div>
@@ -153,7 +168,7 @@ async function init() {
         sisters = await r.json();
         render();
     } catch(e) {
-        document.getElementById('mainContent').innerHTML = "<p style='text-align:center; padding:50px;'>Error al conectar. Reintenta pronto.</p>";
+        document.getElementById('mainContent').innerHTML = "<p style='text-align:center; padding:50px;'>Error al conectar.</p>";
     }
 }
 
@@ -199,15 +214,36 @@ function checkPass() {
     } else { alert("Contraseña incorrecta, hermana."); }
 }
 
+// NUEVA FUNCIÓN CON LÓGICA DE TIMELINE
 function showHist() {
     const body = document.getElementById('histBody');
     document.getElementById('histTitle').innerText = activeSister.nombre;
-    let h = `<table style="width:100%; border-collapse: collapse; font-size: 0.85rem;">`;
+    
+    let h = `<div class="timeline">`;
+    
+    // Invertimos para que lo más reciente aparezca arriba
     [...activeSister.detalles].reverse().forEach(d => {
         const c = d.puntos >= 0 ? "#2e7d32" : "#c62828";
-        h += `<tr style="border-bottom: 1px solid #eee;"><td style="padding:10px;">${new Date(d.fecha).toLocaleDateString()}</td><td style="padding:10px;">${d.motivo}</td><td style="padding:10px; color:${c}; font-weight:bold;">${d.puntos > 0 ? '+':''}${d.puntos}</td></tr>`;
+        const fechaSimple = new Date(d.fecha).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+        
+        h += `
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <span class="timeline-date">${fechaSimple}</span>
+                <div class="timeline-content">
+                    <span class="timeline-motivo">${d.motivo}</span>
+                    <span class="timeline-pts" style="color:${c}">${d.puntos > 0 ? '+':''}${d.puntos}</span>
+                </div>
+            </div>`;
     });
-    body.innerHTML = h + `</table>`;
+    
+    h += `</div>`;
+    
+    if(activeSister.detalles.length === 0) {
+        h = `<p style="padding:20px; color:#999;">Aún no hay registros en el libro.</p>`;
+    }
+    
+    body.innerHTML = h;
     document.getElementById('historyModal').classList.remove('hidden');
 }
 
@@ -216,10 +252,8 @@ function openRules(t) {
     document.getElementById('rulesTitle').innerText = isE ? "Cómo ganar puntos" : "Cómo perder puntos";
     document.getElementById('rulesTitle').style.color = isE ? "#2e7d32" : "#c62828";
     
-    // MODIFICA ESTOS TEXTOS SEGÚN NECESITES
     const earnRules = ["Saber parlamento (+50)", "Acto de servicio (+10)", "Destacar en trabajo (+5)"];
     const loseRules = ["Faltar sin aviso (-10)", "No preparar tarea (-5)", "Interrumpir (-10)"];
-    
     const r = isE ? earnRules : loseRules;
         
     document.getElementById('rulesList').innerHTML = r.map(i => `<p style="padding:12px; border-bottom:1px solid #eee; margin:0; font-size:0.9rem;">${i}</p>`).join('');
