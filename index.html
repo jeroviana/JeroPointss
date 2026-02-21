@@ -10,7 +10,6 @@
     --rosa-principal: #f8bbd0;
     --rosa-fuerte: #e91e63;
     --dorado: #dfaf37; --plata: #9e9e9e; --bronce: #cd7f32;
-    /* Arcoíris oficial: rojo, naranja, amarillo, verde, celeste, azul, lila */
     --arcoiris-oficial: linear-gradient(90deg, #ffadad, #ffd6a5, #fdffb6, #caffbf, #9bf6ff, #a0c4ff, #bdb2ff);
   }
 
@@ -20,7 +19,7 @@
     color: #444; 
     margin: 0; 
     min-height: 100vh; 
-    padding-bottom: 100px; 
+    padding-bottom: 120px; /* Espacio para que los botones no tapen la lista */
   }
   
   header { 
@@ -32,56 +31,75 @@
     box-shadow: 0 4px 15px rgba(0,0,0,0.03);
   }
   
-  h1 { font-family: 'Playfair Display', serif; font-size: 2.5rem; color: var(--rosa-fuerte); margin: 0; letter-spacing: 1px; }
+  h1 { font-family: 'Playfair Display', serif; font-size: 2.2rem; color: var(--rosa-fuerte); margin: 0; letter-spacing: 1px; }
 
-  /* Podio */
-  .podium-container { display: flex; justify-content: center; align-items: flex-end; gap: 10px; margin: 40px auto; height: 260px; max-width: 600px; padding: 0 15px; }
-  .podium-step { flex: 1; display: flex; flex-direction: column; align-items: center; transition: 0.3s; }
-  .podium-bar { width: 100%; border-radius: 12px 12px 0 0; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+  /* Podio Adaptable */
+  .podium-container { 
+    display: flex; justify-content: center; align-items: flex-end; 
+    gap: 8px; margin: 30px auto; height: 240px; max-width: 500px; padding: 0 10px; 
+  }
+  .podium-step { flex: 1; display: flex; flex-direction: column; align-items: center; }
+  .podium-bar { 
+    width: 100%; border-radius: 12px 12px 0 0; display: flex; flex-direction: column; 
+    justify-content: center; align-items: center; color: white; font-weight: bold; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+  }
   
-  .step-1 { height: 160px; background: var(--dorado); order: 2; }
-  .step-2 { height: 120px; background: var(--plata); order: 1; }
-  .step-3 { height: 90px; background: var(--bronce); order: 3; }
+  .step-1 { height: 140px; background: var(--dorado); order: 2; }
+  .step-2 { height: 100px; background: var(--plata); order: 1; }
+  .step-3 { height: 75px; background: var(--bronce); order: 3; }
   
-  .podium-name { font-family: 'Playfair Display', serif; font-weight: bold; margin-bottom: 8px; font-size: 1rem; color: #333; text-align: center; }
-  .avatar { width: 65px; height: 65px; border-radius: 50%; background: white; margin-bottom: -10px; z-index: 2; border: 4px solid white; box-shadow: 0 4px 8px rgba(0,0,0,0.1); object-fit: cover; }
+  .podium-name { font-family: 'Playfair Display', serif; font-weight: bold; margin-bottom: 5px; font-size: 0.9rem; color: #333; text-align: center; }
+  .avatar { 
+    width: 55px; height: 55px; border-radius: 50%; background: white; 
+    margin-bottom: -10px; z-index: 2; border: 3px solid white; 
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1); object-fit: cover; 
+  }
 
-  /* Lista */
-  .ranking-list { max-width: 650px; margin: 0 auto; padding: 20px; }
+  /* Lista de Ranking */
+  .ranking-list { max-width: 600px; margin: 0 auto; padding: 15px; }
   .sister-card { 
-    background: white; margin-bottom: 12px; padding: 15px 25px; border-radius: 50px; 
+    background: white; margin-bottom: 10px; padding: 12px 20px; border-radius: 50px; 
     display: flex; justify-content: space-between; align-items: center; 
-    cursor: pointer; transition: all 0.3s ease; border: 1px solid #f0f0f0; 
+    cursor: pointer; transition: 0.3s; border: 1px solid #f0f0f0; 
   }
-  .sister-card:hover { transform: translateX(5px); background: var(--rosa-principal); color: white; border-color: var(--rosa-principal); }
+  .sister-card:hover { transform: scale(1.02); background: var(--rosa-principal); color: white; }
 
-  /* Botones Fijos con colores solicitados */
+  /* BOTONES INFERIORES ARREGLADOS */
+  .footer-btns {
+    position: fixed; bottom: 20px; left: 0; width: 100%;
+    display: flex; justify-content: center; gap: 10px;
+    padding: 0 15px; box-sizing: border-box; z-index: 100;
+  }
   .btn-fixed {
-    position: fixed; bottom: 25px; padding: 14px 22px; border-radius: 30px;
+    flex: 1; max-width: 180px; padding: 12px 10px; border-radius: 25px;
     font-family: 'Montserrat', sans-serif; font-weight: 700; cursor: pointer;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.15); transition: 0.3s; z-index: 50; border: none;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15); border: none; font-size: 0.8rem;
+    color: white; transition: 0.3s;
   }
-  .btn-earn { left: 20px; background: #4caf50; color: white; }
-  .btn-earn:hover { background: #388e3c; transform: scale(1.05); }
-  
-  .btn-lose { right: 20px; background: #f44336; color: white; }
-  .btn-lose:hover { background: #d32f2f; transform: scale(1.05); }
+  .btn-earn { background: #4caf50; }
+  .btn-lose { background: #f44336; }
+  .btn-fixed:active { transform: scale(0.95); }
 
-  /* Modales Estilizados */
-  .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(233, 30, 99, 0.1); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 1000; }
-  .modal-content { background: white; padding: 35px; border-radius: 30px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.1); position: relative; border: 2px solid var(--rosa-principal); }
+  /* Modales y Inputs */
+  .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+  .modal-content { background: white; padding: 30px; border-radius: 25px; width: 85%; max-width: 350px; text-align: center; position: relative; }
   
-  input { width: 100%; padding: 14px; margin: 20px 0; border: 2px solid var(--rosa-principal); border-radius: 15px; text-align: center; font-size: 1rem; outline: none; }
-  .btn-action { background: var(--rosa-fuerte); color: white; border: none; padding: 12px 30px; border-radius: 25px; cursor: pointer; font-weight: 600; width: 100%; font-size: 1rem; }
+  /* INPUT CORREGIDO Y CENTRADO */
+  input { 
+    width: 100%; max-width: 250px; padding: 12px; margin: 20px auto; 
+    border: 2px solid var(--rosa-principal); border-radius: 12px; 
+    text-align: center; font-size: 1.1rem; outline: none; display: block;
+    font-family: 'Montserrat', sans-serif;
+  }
+  input::placeholder { color: transparent; } /* Eliminamos los puntos */
+
+  .btn-action { background: var(--rosa-fuerte); color: white; border: none; padding: 12px; border-radius: 20px; cursor: pointer; font-weight: 600; width: 100%; }
   
   .close-x { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; color: #ccc; cursor: pointer; }
-
-  .detail-container { max-height: 300px; overflow-y: auto; margin-top: 20px; }
-  .detail-table { width: 100%; border-collapse: collapse; }
-  .detail-table td { padding: 12px; border-bottom: 1px solid #eee; text-align: left; font-size: 0.9rem; }
-
+  .detail-container { max-height: 250px; overflow-y: auto; margin-top: 15px; }
   .hidden { display: none !important; }
-  .loading { text-align: center; padding: 100px; color: var(--rosa-fuerte); font-size: 1.2rem; }
+  .loading { text-align: center; padding: 100px; color: var(--rosa-fuerte); }
 </style>
 </head>
 <body>
@@ -94,13 +112,15 @@
   <div class="loading">✨ Abriendo el Libro de Puntos... ✨</div>
 </main>
 
-<button class="btn-fixed btn-earn" onclick="openRules('earn')">Cómo ganar puntos</button>
-<button class="btn-fixed btn-lose" onclick="openRules('lose')">Cómo perder puntos</button>
+<div class="footer-btns">
+  <button class="btn-fixed btn-earn" onclick="openRules('earn')">Cómo ganar</button>
+  <button class="btn-fixed btn-lose" onclick="openRules('lose')">Cómo perder</button>
+</div>
 
 <div id="rulesModal" class="modal-overlay hidden" onclick="this.classList.add('hidden')">
   <div class="modal-content" onclick="event.stopPropagation()">
     <span class="close-x" onclick="document.getElementById('rulesModal').classList.add('hidden')">&times;</span>
-    <h2 id="rulesTitle" style="font-family: 'Playfair Display', serif;"></h2>
+    <h2 id="rulesTitle" style="font-family: 'Playfair Display', serif; margin-bottom: 10px;"></h2>
     <div id="rulesList" class="detail-container"></div>
   </div>
 </div>
@@ -108,14 +128,14 @@
 <div id="loginModal" class="modal-overlay hidden" onclick="this.classList.add('hidden')">
   <div class="modal-content" onclick="event.stopPropagation()">
     <h2 id="loginName" style="font-family: 'Playfair Display', serif; color: var(--rosa-fuerte); margin:0;"></h2>
-    <p style="color: #888; font-size: 0.8rem;">Introduce tu contraseña secreta</p>
-    <input type="password" id="passInput" placeholder="••••••••">
+    <p style="color: #888; font-size: 0.85rem; margin-top: 10px;">Introduce tu contraseña</p>
+    <input type="password" id="passInput">
     <button class="btn-action" onclick="checkPass()">Ver mis registros</button>
   </div>
 </div>
 
 <div id="historyModal" class="modal-overlay hidden" onclick="this.classList.add('hidden')">
-  <div class="modal-content" style="max-width: 500px;" onclick="event.stopPropagation()">
+  <div class="modal-content" style="max-width: 450px;" onclick="event.stopPropagation()">
     <span class="close-x" onclick="document.getElementById('historyModal').classList.add('hidden')">&times;</span>
     <h2 id="histTitle" style="font-family: 'Playfair Display', serif; color: var(--rosa-fuerte);"></h2>
     <div id="histBody" class="detail-container"></div>
@@ -133,7 +153,7 @@ async function init() {
         sisters = await r.json();
         render();
     } catch(e) {
-        document.getElementById('mainContent').innerHTML = "<p style='text-align:center; padding:50px;'>Error de conexión. Verifica los permisos del Script.</p>";
+        document.getElementById('mainContent').innerHTML = "<p style='text-align:center; padding:50px;'>Error al conectar. Reintenta pronto.</p>";
     }
 }
 
@@ -142,7 +162,6 @@ function render() {
     const main = document.getElementById('mainContent');
     main.innerHTML = `<div class="podium-container" id="pod"></div><div class="ranking-list" id="list"></div>`;
     
-    // Podio
     const pod = document.getElementById('pod');
     [1,0,2].forEach(idx => {
         const s = sorted[idx];
@@ -155,7 +174,6 @@ function render() {
             </div>`;
     });
 
-    // Lista
     const list = document.getElementById('list');
     sorted.forEach((s, i) => {
         list.innerHTML += `
@@ -171,6 +189,7 @@ function login(n) {
     document.getElementById('loginName').innerText = n;
     document.getElementById('passInput').value = "";
     document.getElementById('loginModal').classList.remove('hidden');
+    setTimeout(() => document.getElementById('passInput').focus(), 300);
 }
 
 function checkPass() {
@@ -183,10 +202,10 @@ function checkPass() {
 function showHist() {
     const body = document.getElementById('histBody');
     document.getElementById('histTitle').innerText = activeSister.nombre;
-    let h = `<table class="detail-table">`;
+    let h = `<table style="width:100%; border-collapse: collapse; font-size: 0.85rem;">`;
     [...activeSister.detalles].reverse().forEach(d => {
         const c = d.puntos >= 0 ? "#2e7d32" : "#c62828";
-        h += `<tr><td>${new Date(d.fecha).toLocaleDateString()}</td><td>${d.motivo}</td><td style="color:${c}; font-weight:bold;">${d.puntos > 0 ? '+':''}${d.puntos}</td></tr>`;
+        h += `<tr style="border-bottom: 1px solid #eee;"><td style="padding:10px;">${new Date(d.fecha).toLocaleDateString()}</td><td style="padding:10px;">${d.motivo}</td><td style="padding:10px; color:${c}; font-weight:bold;">${d.puntos > 0 ? '+':''}${d.puntos}</td></tr>`;
     });
     body.innerHTML = h + `</table>`;
     document.getElementById('historyModal').classList.remove('hidden');
@@ -197,12 +216,13 @@ function openRules(t) {
     document.getElementById('rulesTitle').innerText = isE ? "Cómo ganar puntos" : "Cómo perder puntos";
     document.getElementById('rulesTitle').style.color = isE ? "#2e7d32" : "#c62828";
     
-    // Aquí puedes personalizar las reglas que se verán en los botones
-    const r = isE ? 
-        ["Saber parlamento (+50)", "Acto de servicio (+10)", "Destacar en trabajo (+5)"] : 
-        ["Faltar sin aviso (-10)", "No preparar tarea (-5)", "Interrumpir (-10)"];
+    // MODIFICA ESTOS TEXTOS SEGÚN NECESITES
+    const earnRules = ["Saber parlamento (+50)", "Acto de servicio (+10)", "Destacar en trabajo (+5)"];
+    const loseRules = ["Faltar sin aviso (-10)", "No preparar tarea (-5)", "Interrumpir (-10)"];
+    
+    const r = isE ? earnRules : loseRules;
         
-    document.getElementById('rulesList').innerHTML = r.map(i => `<p style="padding:10px; border-bottom:1px solid #eee; margin:0;">${i}</p>`).join('');
+    document.getElementById('rulesList').innerHTML = r.map(i => `<p style="padding:12px; border-bottom:1px solid #eee; margin:0; font-size:0.9rem;">${i}</p>`).join('');
     document.getElementById('rulesModal').classList.remove('hidden');
 }
 
