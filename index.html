@@ -80,7 +80,7 @@
   .btn-earn { background: #4caf50; }
   .btn-lose { background: #f44336; }
 
-  /* Modales */
+  /* Modales Generales */
   .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center; z-index: 1000; }
   .modal-content { background: white; padding: 30px; border-radius: 25px; width: 85%; max-width: 350px; text-align: center; position: relative; }
   
@@ -113,6 +113,66 @@
   .timeline-motivo { font-size: 0.85rem; color: #555; font-weight: 500; }
   .timeline-pts { font-weight: 700; font-size: 0.95rem; }
 
+  /* --- NUEVOS ESTILOS PARA LA LISTA DE REGLAS --- */
+  .lista-reglas {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+  }
+
+  .item-regla {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f9f9f9;
+      margin-bottom: 12px;
+      padding: 15px 15px;
+      border-radius: 15px;
+      transition: transform 0.2s;
+      border: 1px solid #eee;
+  }
+
+  .item-regla:hover {
+      transform: scale(1.02);
+      background: #fff;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  }
+
+  .regla-texto {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.85rem;
+      color: #444;
+      text-align: left;
+      flex: 1;
+      padding-right: 10px;
+      line-height: 1.3;
+      font-weight: 500;
+  }
+
+  /* Burbuja de puntaje positivo */
+  .badge-pos {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      background: #e8f5e9;
+      color: #2e7d32;
+      padding: 6px 12px;
+      border-radius: 10px;
+      white-space: nowrap;
+  }
+
+  /* Burbuja de puntaje negativo */
+  .badge-neg {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      background: #ffebee;
+      color: #c62828;
+      padding: 6px 12px;
+      border-radius: 10px;
+      white-space: nowrap;
+  }
+
   .hidden { display: none !important; }
   .loading { text-align: center; padding: 100px; color: var(--rosa-fuerte); }
 </style>
@@ -135,7 +195,7 @@
 <div id="rulesModal" class="modal-overlay hidden" onclick="this.classList.add('hidden')">
   <div class="modal-content" onclick="event.stopPropagation()">
     <span class="close-x" onclick="document.getElementById('rulesModal').classList.add('hidden')">&times;</span>
-    <h2 id="rulesTitle" style="font-family: 'Playfair Display', serif; margin-bottom: 10px;"></h2>
+    <h2 id="rulesTitle" style="font-family: 'Playfair Display', serif; margin-bottom: 20px;"></h2>
     <div id="rulesList" class="detail-container"></div>
   </div>
 </div>
@@ -214,14 +274,12 @@ function checkPass() {
     } else { alert("Contraseña incorrecta, hermana."); }
 }
 
-// NUEVA FUNCIÓN CON LÓGICA DE TIMELINE
 function showHist() {
     const body = document.getElementById('histBody');
     document.getElementById('histTitle').innerText = activeSister.nombre;
     
     let h = `<div class="timeline">`;
     
-    // Invertimos para que lo más reciente aparezca arriba
     [...activeSister.detalles].reverse().forEach(d => {
         const c = d.puntos >= 0 ? "#2e7d32" : "#c62828";
         const fechaSimple = new Date(d.fecha).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
@@ -247,16 +305,44 @@ function showHist() {
     document.getElementById('historyModal').classList.remove('hidden');
 }
 
+// NUEVA LÓGICA PARA RENDERIZAR LAS REGLAS BONITAS
 function openRules(t) {
     const isE = t === 'earn';
     document.getElementById('rulesTitle').innerText = isE ? "Cómo ganar puntos" : "Cómo perder puntos";
     document.getElementById('rulesTitle').style.color = isE ? "#2e7d32" : "#c62828";
     
-    const earnRules = ["Saber parlamento de memoria en una publica (largo) (+50)", "Participar de las dinamicas(+10)", "Destacar en trabajo (+5)"];
-    const loseRules = ["Ausencia injustificada (-10)", "No participar de una dinamica obligatoria (-5)", "Interrumpir (-5)"];
-    const r = isE ? earnRules : loseRules;
+    // Arrays de objetos en lugar de strings simples
+    const earnRules = [
+        { desc: "Saber parlamento de memoria en una publica (largo)", pts: "+ 50", colorBorde: "var(--dorado)" },
+        { desc: "Participar de las dinámicas", pts: "+ 10", colorBorde: "var(--rosa-fuerte)" },
+        { desc: "Destacar en trabajo", pts: "+ 5", colorBorde: "var(--rosa-principal)" }
+    ];
+    
+    const loseRules = [
+        { desc: "Ausencia injustificada", pts: "- 10" },
+        { desc: "No participar de una dinámica obligatoria", pts: "- 5" },
+        { desc: "Interrumpir", pts: "- 5" }
+    ];
+    
+    const rulesToRender = isE ? earnRules : loseRules;
+    const badgeClass = isE ? "badge-pos" : "badge-neg";
+    
+    let htmlContent = `<div class="lista-reglas">`;
+    
+    rulesToRender.forEach(rule => {
+        // Solo aplica borde lateral de color si es para ganar puntos
+        const borderStyle = isE ? `border-left: 5px solid ${rule.colorBorde};` : `border-left: 5px solid #c62828;`;
         
-    document.getElementById('rulesList').innerHTML = r.map(i => `<p style="padding:12px; border-bottom:1px solid #eee; margin:0; font-size:0.9rem;">${i}</p>`).join('');
+        htmlContent += `
+            <div class="item-regla" style="${borderStyle}">
+                <span class="regla-texto">${rule.desc}</span>
+                <span class="${badgeClass}">${rule.pts}</span>
+            </div>`;
+    });
+    
+    htmlContent += `</div>`;
+    
+    document.getElementById('rulesList').innerHTML = htmlContent;
     document.getElementById('rulesModal').classList.remove('hidden');
 }
 
@@ -264,4 +350,3 @@ init();
 </script>
 </body>
 </html>
-
