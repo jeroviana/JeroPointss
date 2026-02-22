@@ -252,8 +252,8 @@ function openRules(t) {
     document.getElementById('rulesTitle').innerText = isE ? "Cómo ganar puntos" : "Cómo perder puntos";
     document.getElementById('rulesTitle').style.color = isE ? "#2e7d32" : "#c62828";
     
-    const earnRules = ["Saber parlamento (+50)", "Acto de servicio (+10)", "Destacar en trabajo (+5)"];
-    const loseRules = ["Faltar sin aviso (-10)", "No preparar tarea (-5)", "Interrumpir (-10)"];
+    const earnRules = ["Saber parlamento de memoria en una publica (largo) (+50)", "Participar de las dinamicas(+10)", "Destacar en trabajo (+5)"];
+    const loseRules = ["Ausencia injustificada (-10)", "No participar de una dinamica obligatoria (-5)", "Interrumpir (-5)"];
     const r = isE ? earnRules : loseRules;
         
     document.getElementById('rulesList').innerHTML = r.map(i => `<p style="padding:12px; border-bottom:1px solid #eee; margin:0; font-size:0.9rem;">${i}</p>`).join('');
@@ -264,3 +264,4 @@ init();
 </script>
 </body>
 </html>
+
