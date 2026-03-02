@@ -313,9 +313,11 @@ function openRules(t) {
     
     // Arrays de objetos en lugar de strings simples
     const earnRules = [
+        { desc: "Destacar en trabajo", pts: "+ 5", colorBorde: "var(--rosa-principal)" },
         { desc: "Saber parlamento de memoria en una publica (largo)", pts: "+ 50", colorBorde: "var(--dorado)" },
         { desc: "Participar de las dinámicas", pts: "+ 10", colorBorde: "var(--rosa-fuerte)" },
-        { desc: "Destacar en trabajo", pts: "+ 5", colorBorde: "var(--rosa-principal)" }
+        { desc: "Participar de una actividad de la gran logia", pts: "+ 10", colorBorde: "var(--rosa-fuerte)" },
+        { desc: "Participar de una actividad realizada un día diferente a sábado", pts: "+ 10", colorBorde: "var(--rosa-fuerte)" }
     ];
     
     const loseRules = [
@@ -350,3 +352,4 @@ init();
 </script>
 </body>
 </html>
+
