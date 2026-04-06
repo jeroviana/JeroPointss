@@ -40,11 +40,9 @@
   }
   .podium-step { 
     flex: 1; display: flex; flex-direction: column; align-items: center; 
-    cursor: pointer; transition: transform 0.2s; /* Efecto click */
+    cursor: pointer; transition: transform 0.2s; 
   }
-  .podium-step:hover {
-    transform: scale(1.05);
-  }
+  .podium-step:hover { transform: scale(1.05); }
   .podium-bar { 
     width: 100%; border-radius: 12px 12px 0 0; display: flex; flex-direction: column; 
     justify-content: center; align-items: center; color: white; font-weight: bold; 
@@ -71,66 +69,71 @@
   }
   .sister-card:hover { transform: scale(1.02); background: var(--rosa-principal); color: white; }
 
-  /* BOTONES INFERIORES */
+  /* BOTONES INFERIORES - Ahora son 3 */
   .footer-btns {
     position: fixed; bottom: 20px; left: 0; width: 100%;
-    display: flex; justify-content: center; gap: 10px;
-    padding: 0 15px; box-sizing: border-box; z-index: 100;
+    display: flex; justify-content: center; gap: 8px;
+    padding: 0 10px; box-sizing: border-box; z-index: 100;
   }
   .btn-fixed {
-    flex: 1; max-width: 180px; padding: 12px 10px; border-radius: 25px;
+    flex: 1; max-width: 140px; padding: 12px 5px; border-radius: 20px;
     font-family: 'Montserrat', sans-serif; font-weight: 700; cursor: pointer;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.15); border: none; font-size: 0.8rem;
-    color: white; transition: 0.3s;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15); border: none; font-size: 0.75rem;
+    color: white; transition: 0.3s; text-align: center; line-height: 1.2;
   }
   .btn-earn { background: #4caf50; }
+  .btn-hist { background: var(--rosa-fuerte); }
   .btn-lose { background: #f44336; }
 
   /* Modales */
   .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center; z-index: 1000; }
-  .modal-content { background: white; padding: 30px; border-radius: 25px; width: 85%; max-width: 350px; text-align: center; position: relative; }
+  .modal-content { background: white; padding: 30px; border-radius: 25px; width: 85%; max-width: 380px; text-align: center; position: relative; }
   
   .close-x { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; color: #ccc; cursor: pointer; }
-  .detail-container { max-height: 400px; overflow-y: auto; margin-top: 15px; padding-right: 5px; } /* Altura un poco mayor para que entre el botón cómodo */
+  .detail-container { max-height: 400px; overflow-y: auto; margin-top: 15px; padding-right: 5px; }
 
-  /* Timeline */
+  /* Timeline General */
   .timeline { position: relative; padding-left: 30px; margin: 20px 0; text-align: left; }
-  .timeline::before {
-    content: ''; position: absolute; left: 10px; top: 0; width: 3px; height: 100%;
-    background: var(--rosa-principal); border-radius: 5px;
-  }
+  .timeline::before { content: ''; position: absolute; left: 10px; top: 0; width: 3px; height: 100%; background: var(--rosa-principal); border-radius: 5px; }
   .timeline-item { position: relative; margin-bottom: 25px; }
-  .timeline-dot {
-    position: absolute; left: -27px; top: 5px; width: 14px; height: 14px;
-    background: white; border: 3px solid var(--rosa-fuerte); border-radius: 50%; z-index: 2;
-  }
+  .timeline-dot { position: absolute; left: -27px; top: 5px; width: 14px; height: 14px; background: white; border: 3px solid var(--rosa-fuerte); border-radius: 50%; z-index: 2; }
   .timeline-date { font-size: 0.7rem; font-weight: 700; color: #b3b3b3; margin-bottom: 5px; display: block; }
+  
+  /* Cajas clickeables del historial definitivo */
   .timeline-content {
     background: #fff; padding: 12px; border-radius: 15px; border: 1px solid #f0f0f0;
     box-shadow: 0 3px 10px rgba(0,0,0,0.02); display: flex; justify-content: space-between; align-items: center;
+    cursor: pointer; transition: 0.2s;
   }
-  .timeline-motivo { font-size: 0.85rem; color: #555; font-weight: 500; }
+  .timeline-content:hover { background: #fffafb; border-color: var(--rosa-principal); }
+  .timeline-motivo { font-size: 0.85rem; color: #555; font-weight: 500; flex: 1; padding-right: 10px; }
   .timeline-pts { font-weight: 700; font-size: 0.95rem; }
+
+  /* Botón de WhatsApp Desplegable */
+  .reclamo-box {
+    margin-top: 8px; display: none; text-align: right;
+    animation: slideDown 0.3s ease-out forwards;
+  }
+  .reclamo-box.show { display: block; }
+  .btn-whatsapp-mini {
+    display: inline-block; background: #25D366; color: white; text-decoration: none;
+    padding: 8px 15px; border-radius: 15px; font-weight: 600; font-size: 0.75rem;
+    box-shadow: 0 4px 8px rgba(37, 211, 102, 0.3); transition: 0.2s;
+  }
+  .btn-whatsapp-mini:hover { background: #128C7E; transform: scale(1.03); }
+
+  @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+  }
 
   /* Reglas */
   .lista-reglas { list-style: none; padding: 0; margin: 0; }
-  .item-regla {
-      display: flex; justify-content: space-between; align-items: center;
-      background: #f9f9f9; margin-bottom: 12px; padding: 15px 15px;
-      border-radius: 15px; transition: transform 0.2s; border: 1px solid #eee;
-  }
+  .item-regla { display: flex; justify-content: space-between; align-items: center; background: #f9f9f9; margin-bottom: 12px; padding: 15px 15px; border-radius: 15px; transition: transform 0.2s; border: 1px solid #eee; }
   .item-regla:hover { transform: scale(1.02); background: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
   .regla-texto { font-family: 'Montserrat', sans-serif; font-size: 0.85rem; color: #444; text-align: left; flex: 1; padding-right: 10px; line-height: 1.3; font-weight: 500; }
   .badge-pos { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.9rem; background: #e8f5e9; color: #2e7d32; padding: 6px 12px; border-radius: 10px; white-space: nowrap; }
   .badge-neg { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.9rem; background: #ffebee; color: #c62828; padding: 6px 12px; border-radius: 10px; white-space: nowrap; }
-
-  /* Botón de WhatsApp Reclamos */
-  .btn-whatsapp {
-    display: block; background: #25D366; color: white; text-decoration: none;
-    padding: 12px; border-radius: 20px; margin-top: 15px; font-weight: 700;
-    font-size: 0.9rem; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3); transition: 0.3s;
-  }
-  .btn-whatsapp:hover { transform: scale(1.02); background: #128C7E; }
 
   .hidden { display: none !important; }
   .loading { text-align: center; padding: 100px; color: var(--rosa-fuerte); }
@@ -148,6 +151,7 @@
 
 <div class="footer-btns">
   <button class="btn-fixed btn-earn" onclick="openRules('earn')">Cómo ganar</button>
+  <button class="btn-fixed btn-hist" onclick="openGlobalHistory()">Historial Asignados</button>
   <button class="btn-fixed btn-lose" onclick="openRules('lose')">Cómo perder</button>
 </div>
 
@@ -167,15 +171,35 @@
   </div>
 </div>
 
+<div id="globalHistoryModal" class="modal-overlay hidden" onclick="this.classList.add('hidden')">
+  <div class="modal-content" style="max-width: 450px;" onclick="event.stopPropagation()">
+    <span class="close-x" onclick="document.getElementById('globalHistoryModal').classList.add('hidden')">&times;</span>
+    <h2 style="font-family: 'Playfair Display', serif; color: var(--rosa-fuerte); margin-bottom: 5px;">Puntos Asignados</h2>
+    <p style="font-size: 0.8rem; color: #888; margin-top: 0;">Tocá un punto si no te lo sumaron</p>
+    <div id="globalHistBody" class="detail-container"></div>
+  </div>
+</div>
+
 <script>
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwbnRBGyL2Uo84GD6yB9kRwCTCrMMyJk4P9YCxgWKQdXPxwsPe4TlWKN_3Y-dgeNL2yoA/exec";
 let sisters = [];
-let activeSister = null;
+let realSisters = [];
+let globalHistoryData = [];
 
 async function init() {
     try {
         const r = await fetch(SCRIPT_URL);
         sisters = await r.json();
+        
+        // 1. Encontrar a la "hermana impostora" que en realidad es la columna de Puntos
+        const colPuntos = sisters.find(s => s.nombre.toLowerCase().includes('punto'));
+        if (colPuntos) {
+            globalHistoryData = colPuntos.detalles; // Guardamos su info para el historial definitivo
+        }
+
+        // 2. Filtrar el ranking para que solo queden las verdaderas chicas (quitando la col "Puntos")
+        realSisters = sisters.filter(s => !s.nombre.toLowerCase().includes('punto'));
+        
         render();
     } catch(e) {
         document.getElementById('mainContent').innerHTML = "<p style='text-align:center; padding:50px;'>Error al conectar.</p>";
@@ -183,13 +207,12 @@ async function init() {
 }
 
 function render() {
-    const sorted = [...sisters].sort((a,b) => b.totalPuntos - a.totalPuntos);
+    const sorted = [...realSisters].sort((a,b) => b.totalPuntos - a.totalPuntos);
     const main = document.getElementById('mainContent');
     main.innerHTML = `<div class="podium-container" id="pod"></div><div class="ranking-list" id="list"></div>`;
     
     const pod = document.getElementById('pod');
     
-    // 1. Mostrar solo a las top 3 en el podio (con onClick)
     [1,0,2].forEach(idx => {
         const s = sorted[idx];
         if(!s) return;
@@ -202,17 +225,11 @@ function render() {
     });
 
     const list = document.getElementById('list');
-    
-    // Obtener los puntos del 3er lugar para detectar empates
     const puntosTercerLugar = sorted[2] ? sorted[2].totalPuntos : null;
-
-    // 2. Mostrar la lista a partir del 4to lugar (índice 3 en adelante)
     const hermanasRestantes = sorted.slice(3);
     
     hermanasRestantes.forEach((s, i) => {
-        const posicionReal = i + 4; // Porque empieza en el 4to puesto
-        
-        // Logica para la medalla de bronce si hay empate con el 3er lugar
+        const posicionReal = i + 4; 
         const esEmpateBronce = s.totalPuntos === puntosTercerLugar;
         const medalla = esEmpateBronce ? ' 🥉' : '';
 
@@ -224,13 +241,13 @@ function render() {
     });
 }
 
+// Historial Personal (Igual que antes)
 function showSisterHistory(n) {
-    activeSister = sisters.find(s => s.nombre === n);
+    const activeSister = realSisters.find(s => s.nombre === n);
     const body = document.getElementById('histBody');
     document.getElementById('histTitle').innerText = activeSister.nombre;
     
     let h = `<div class="timeline">`;
-    
     [...activeSister.detalles].reverse().forEach(d => {
         const c = d.puntos >= 0 ? "#2e7d32" : "#c62828";
         const fechaSimple = new Date(d.fecha).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
@@ -239,28 +256,61 @@ function showSisterHistory(n) {
             <div class="timeline-item">
                 <div class="timeline-dot"></div>
                 <span class="timeline-date">${fechaSimple}</span>
-                <div class="timeline-content">
+                <div class="timeline-content" style="cursor:default;">
                     <span class="timeline-motivo">${d.motivo}</span>
                     <span class="timeline-pts" style="color:${c}">${d.puntos > 0 ? '+':''}${d.puntos}</span>
+                </div>
+            </div>`;
+    });
+    h += `</div>`;
+    
+    if(activeSister.detalles.length === 0) h = `<p style="padding:20px; color:#999;">Aún no hay registros en el libro.</p>`;
+    
+    body.innerHTML = h;
+    document.getElementById('historyModal').classList.remove('hidden');
+}
+
+// Historial DEFINITIVO (El nuevo modal)
+function openGlobalHistory() {
+    const body = document.getElementById('globalHistBody');
+    let h = `<div class="timeline">`;
+    
+    [...globalHistoryData].reverse().forEach((d, index) => {
+        const c = d.puntos >= 0 ? "#2e7d32" : "#c62828";
+        const fechaSimple = new Date(d.fecha).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+        
+        // Texto que ya incluye el motivo y la fecha exactos para que la hermana no tenga que escribir nada
+        const msjWhatsApp = encodeURIComponent(`¡Hola mi hermana! Quería avisar que no me sumaron mis Jeropoints correspondientes a: "${d.motivo}" de la fecha ${fechaSimple}.`);
+        
+        h += `
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <span class="timeline-date">${fechaSimple}</span>
+                
+                <div class="timeline-content" onclick="toggleReclamo(${index})">
+                    <span class="timeline-motivo">${d.motivo}</span>
+                    <span class="timeline-pts" style="color:${c}">${d.puntos > 0 ? '+':''}${d.puntos}</span>
+                </div>
+                
+                <div id="reclamo-${index}" class="reclamo-box">
+                    <a href="https://wa.me/TU_NUMERO_AQUI?text=${msjWhatsApp}" target="_blank" class="btn-whatsapp-mini">
+                        ¡No me sumaron este punto! 📲
+                    </a>
                 </div>
             </div>`;
     });
     
     h += `</div>`;
     
-    if(activeSister.detalles.length === 0) {
-        h = `<p style="padding:20px; color:#999;">Aún no hay registros en el libro.</p>`;
-    }
+    if(globalHistoryData.length === 0) h = `<p style="padding:20px; color:#999;">Todavía no se asignaron puntos.</p>`;
     
-    // BOTÓN EVIDENTE DE RECLAMO AL FINAL DEL HISTORIAL
-    const msjWhatsApp = encodeURIComponent("Hola mi hermana! Hay una ocasión en la que no me sumaron mis Jeropoints");
-    // ACÁ REEMPLAZAR EL NÚMERO (donde dice TU_NUMERO_AQUI) con el de la hermana encargada (ej. 595981...)
-    h += `<a href="https://wa.me/TU_NUMERO_AQUI?text=${msjWhatsApp}" target="_blank" class="btn-whatsapp">
-            ¿Falta algún punto? ¡Contactá a la encargada!
-          </a>`;
-
     body.innerHTML = h;
-    document.getElementById('historyModal').classList.remove('hidden');
+    document.getElementById('globalHistoryModal').classList.remove('hidden');
+}
+
+// Función para mostrar/ocultar el botón de reclamo
+function toggleReclamo(index) {
+    document.getElementById(`reclamo-${index}`).classList.toggle('show');
 }
 
 function openRules(t) {
