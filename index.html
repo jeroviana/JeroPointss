@@ -33,12 +33,18 @@
   
   h1 { font-family: 'Playfair Display', serif; font-size: 2.2rem; color: var(--rosa-fuerte); margin: 0; letter-spacing: 1px; }
 
-  /* Podio Adaptable */
+  /* Podio Adaptable y Clickeable */
   .podium-container { 
     display: flex; justify-content: center; align-items: flex-end; 
     gap: 8px; margin: 30px auto; height: 240px; max-width: 500px; padding: 0 10px; 
   }
-  .podium-step { flex: 1; display: flex; flex-direction: column; align-items: center; }
+  .podium-step { 
+    flex: 1; display: flex; flex-direction: column; align-items: center; 
+    cursor: pointer; transition: transform 0.2s; /* Efecto click */
+  }
+  .podium-step:hover {
+    transform: scale(1.05);
+  }
   .podium-bar { 
     width: 100%; border-radius: 12px 12px 0 0; display: flex; flex-direction: column; 
     justify-content: center; align-items: center; color: white; font-weight: bold; 
@@ -85,7 +91,7 @@
   .modal-content { background: white; padding: 30px; border-radius: 25px; width: 85%; max-width: 350px; text-align: center; position: relative; }
   
   .close-x { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; color: #ccc; cursor: pointer; }
-  .detail-container { max-height: 350px; overflow-y: auto; margin-top: 15px; padding-right: 5px; }
+  .detail-container { max-height: 400px; overflow-y: auto; margin-top: 15px; padding-right: 5px; } /* Altura un poco mayor para que entre el botón cómodo */
 
   /* Timeline */
   .timeline { position: relative; padding-left: 30px; margin: 20px 0; text-align: left; }
@@ -117,6 +123,14 @@
   .regla-texto { font-family: 'Montserrat', sans-serif; font-size: 0.85rem; color: #444; text-align: left; flex: 1; padding-right: 10px; line-height: 1.3; font-weight: 500; }
   .badge-pos { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.9rem; background: #e8f5e9; color: #2e7d32; padding: 6px 12px; border-radius: 10px; white-space: nowrap; }
   .badge-neg { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.9rem; background: #ffebee; color: #c62828; padding: 6px 12px; border-radius: 10px; white-space: nowrap; }
+
+  /* Botón de WhatsApp Reclamos */
+  .btn-whatsapp {
+    display: block; background: #25D366; color: white; text-decoration: none;
+    padding: 12px; border-radius: 20px; margin-top: 15px; font-weight: 700;
+    font-size: 0.9rem; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3); transition: 0.3s;
+  }
+  .btn-whatsapp:hover { transform: scale(1.02); background: #128C7E; }
 
   .hidden { display: none !important; }
   .loading { text-align: center; padding: 100px; color: var(--rosa-fuerte); }
@@ -174,11 +188,13 @@ function render() {
     main.innerHTML = `<div class="podium-container" id="pod"></div><div class="ranking-list" id="list"></div>`;
     
     const pod = document.getElementById('pod');
+    
+    // 1. Mostrar solo a las top 3 en el podio (con onClick)
     [1,0,2].forEach(idx => {
         const s = sorted[idx];
         if(!s) return;
         pod.innerHTML += `
-            <div class="podium-step">
+            <div class="podium-step" onclick="showSisterHistory('${s.nombre}')">
                 <div class="podium-name">${s.nombre}</div>
                 <img src="${s.foto || 'https://ui-avatars.com/api/?name='+s.nombre+'&background=f8bbd0&color=fff'}" class="avatar">
                 <div class="podium-bar step-${idx+1}"><span>${s.totalPuntos}</span><small>PTS</small></div>
@@ -186,16 +202,28 @@ function render() {
     });
 
     const list = document.getElementById('list');
-    sorted.forEach((s, i) => {
+    
+    // Obtener los puntos del 3er lugar para detectar empates
+    const puntosTercerLugar = sorted[2] ? sorted[2].totalPuntos : null;
+
+    // 2. Mostrar la lista a partir del 4to lugar (índice 3 en adelante)
+    const hermanasRestantes = sorted.slice(3);
+    
+    hermanasRestantes.forEach((s, i) => {
+        const posicionReal = i + 4; // Porque empieza en el 4to puesto
+        
+        // Logica para la medalla de bronce si hay empate con el 3er lugar
+        const esEmpateBronce = s.totalPuntos === puntosTercerLugar;
+        const medalla = esEmpateBronce ? ' 🥉' : '';
+
         list.innerHTML += `
             <div class="sister-card" onclick="showSisterHistory('${s.nombre}')">
-                <span><strong style="color:var(--rosa-fuerte)">${i+1}.</strong> ${s.nombre}</span>
+                <span><strong style="color:var(--rosa-fuerte)">${posicionReal}.</strong> ${s.nombre}${medalla}</span>
                 <span style="font-weight:bold; color:var(--rosa-fuerte)">${s.totalPuntos} pts</span>
             </div>`;
     });
 }
 
-// Ahora la función va directo al historial sin pedir pass
 function showSisterHistory(n) {
     activeSister = sisters.find(s => s.nombre === n);
     const body = document.getElementById('histBody');
@@ -224,6 +252,13 @@ function showSisterHistory(n) {
         h = `<p style="padding:20px; color:#999;">Aún no hay registros en el libro.</p>`;
     }
     
+    // BOTÓN EVIDENTE DE RECLAMO AL FINAL DEL HISTORIAL
+    const msjWhatsApp = encodeURIComponent("Hola mi hermana! Hay una ocasión en la que no me sumaron mis Jeropoints");
+    // ACÁ REEMPLAZAR EL NÚMERO (donde dice TU_NUMERO_AQUI) con el de la hermana encargada (ej. 595981...)
+    h += `<a href="https://wa.me/TU_NUMERO_AQUI?text=${msjWhatsApp}" target="_blank" class="btn-whatsapp">
+            ¿Falta algún punto? ¡Contactá a la encargada!
+          </a>`;
+
     body.innerHTML = h;
     document.getElementById('historyModal').classList.remove('hidden');
 }
