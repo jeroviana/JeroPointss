@@ -33,7 +33,6 @@
   
   h1 { font-family: 'Playfair Display', serif; font-size: 2.2rem; color: var(--rosa-fuerte); margin: 0; letter-spacing: 1px; }
 
-  /* Podio Adaptable y Clickeable */
   .podium-container { 
     display: flex; justify-content: center; align-items: flex-end; 
     gap: 8px; margin: 30px auto; height: 240px; max-width: 500px; padding: 0 10px; 
@@ -60,7 +59,6 @@
     box-shadow: 0 4px 8px rgba(0,0,0,0.1); object-fit: cover; 
   }
 
-  /* Lista de Ranking */
   .ranking-list { max-width: 600px; margin: 0 auto; padding: 15px; }
   .sister-card { 
     background: white; margin-bottom: 10px; padding: 12px 20px; border-radius: 50px; 
@@ -69,7 +67,6 @@
   }
   .sister-card:hover { transform: scale(1.02); background: var(--rosa-principal); color: white; }
 
-  /* BOTONES INFERIORES */
   .footer-btns {
     position: fixed; bottom: 20px; left: 0; width: 100%;
     display: flex; justify-content: center; gap: 8px;
@@ -85,14 +82,12 @@
   .btn-hist { background: var(--rosa-fuerte); }
   .btn-lose { background: #f44336; }
 
-  /* Modales */
   .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center; z-index: 1000; }
   .modal-content { background: white; padding: 30px; border-radius: 25px; width: 85%; max-width: 380px; text-align: center; position: relative; }
   
   .close-x { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; color: #ccc; cursor: pointer; }
   .detail-container { max-height: 400px; overflow-y: auto; margin-top: 15px; padding-right: 5px; }
 
-  /* Timeline General */
   .timeline { position: relative; padding-left: 30px; margin: 20px 0; text-align: left; }
   .timeline::before { content: ''; position: absolute; left: 10px; top: 0; width: 3px; height: 100%; background: var(--rosa-principal); border-radius: 5px; }
   .timeline-item { position: relative; margin-bottom: 25px; }
@@ -108,7 +103,6 @@
   .timeline-motivo { font-size: 0.85rem; color: #555; font-weight: 500; flex: 1; padding-right: 10px; }
   .timeline-pts { font-weight: 700; font-size: 0.95rem; }
 
-  /* Botón de WhatsApp */
   .reclamo-box {
     margin-top: 8px; display: none; text-align: right;
     animation: slideDown 0.3s ease-out forwards;
@@ -126,7 +120,6 @@
       to { opacity: 1; transform: translateY(0); }
   }
 
-  /* Reglas */
   .lista-reglas { list-style: none; padding: 0; margin: 0; }
   .item-regla { display: flex; justify-content: space-between; align-items: center; background: #f9f9f9; margin-bottom: 12px; padding: 15px 15px; border-radius: 15px; transition: transform 0.2s; border: 1px solid #eee; }
   .item-regla:hover { transform: scale(1.02); background: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
@@ -190,29 +183,20 @@ async function init() {
         const r = await fetch(SCRIPT_URL);
         const rawData = await r.json();
         
-        sisters = rawData.map(s => {
-            // Saltamos las filas de configuracion (contraseña, foto, etc)
-            const dSlices = s.detalles ? s.detalles.slice(4) : [];
-            
-            // EL FIX: Buscamos tanto "Puntos" como "puntos" para que sume correctamente
-            const totalCalc = dSlices.reduce((acc, curr) => {
-                const valorPuntos = curr.Puntos || curr.puntos || 0;
-                const p = parseFloat(valorPuntos);
-                return acc + (isNaN(p) ? 0 : p);
-            }, 0);
-
+        // El script ahora devuelve { usuarios: [...], historialGlobal: [...] }
+        const usuarios = rawData.usuarios || rawData;
+        
+        sisters = usuarios.map(s => {
             return {
                 ...s,
-                detalles: dSlices,
-                totalPuntos: totalCalc
+                totalPuntos: s.puntos || 0,
+                detalles: s.detalles || []
             };
         });
         
-        const colPuntos = sisters.find(s => s.nombre && s.nombre.toLowerCase().includes('punto'));
-        if (colPuntos) {
-            globalHistoryData = colPuntos.detalles; 
-        }
-
+        // Historial global (puntos base de cada actividad)
+        globalHistoryData = rawData.historialGlobal || [];
+        
         realSisters = sisters.filter(s => s.nombre && !s.nombre.toLowerCase().includes('punto'));
         
         render();
@@ -232,10 +216,11 @@ function render() {
     [1,0,2].forEach(idx => {
         const s = sorted[idx];
         if(!s) return;
+        const fotoUrl = s.foto && s.foto.trim() !== "" ? s.foto : `https://ui-avatars.com/api/?name=${encodeURIComponent(s.nombre)}&background=f8bbd0&color=fff`;
         pod.innerHTML += `
-            <div class="podium-step" onclick="showSisterHistory('${s.nombre}')">
+            <div class="podium-step" onclick="showSisterHistory('${s.nombre.replace(/'/g, "\\'")}')">
                 <div class="podium-name">${s.nombre}</div>
-                <img src="${s.foto || 'https://ui-avatars.com/api/?name='+s.nombre+'&background=f8bbd0&color=fff'}" class="avatar">
+                <img src="${fotoUrl}" class="avatar" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(s.nombre)}&background=f8bbd0&color=fff'">
                 <div class="podium-bar step-${idx+1}"><span>${s.totalPuntos}</span><small>PTS</small></div>
             </div>`;
     });
@@ -245,58 +230,86 @@ function render() {
     
     hermanasRestantes.forEach((s, i) => {
         list.innerHTML += `
-            <div class="sister-card" onclick="showSisterHistory('${s.nombre}')">
+            <div class="sister-card" onclick="showSisterHistory('${s.nombre.replace(/'/g, "\\'")}')">
                 <span><strong style="color:var(--rosa-fuerte)">${i + 4}.</strong> ${s.nombre}</span>
                 <span style="font-weight:bold; color:var(--rosa-fuerte)">${s.totalPuntos} pts</span>
             </div>`;
     });
 }
 
-function showSisterHistory(n) {
-    const activeSister = realSisters.find(s => s.nombre === n);
+function showSisterHistory(nombre) {
+    const activeSister = realSisters.find(s => s.nombre === nombre);
+    if (!activeSister) return;
+    
     const body = document.getElementById('histBody');
     document.getElementById('histTitle').innerText = activeSister.nombre;
     
     let h = `<div class="timeline">`;
-    [...activeSister.detalles].reverse().forEach(d => {
-        const pVal = parseFloat(d.Puntos || d.puntos || 0);
-        const motivo = d.Motivo || d.motivo || 'Sin motivo';
-        const fechaVal = d.Fecha || d.fecha;
-        
-        if (pVal === 0 && motivo === 'Sin motivo') return;
-
-        const c = pVal >= 0 ? "#2e7d32" : "#c62828";
-        const fechaSimple = fechaVal ? new Date(fechaVal).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }) : '---';
-        
-        h += `
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <span class="timeline-date">${fechaSimple}</span>
-                <div class="timeline-content" style="cursor:default;">
-                    <span class="timeline-motivo">${motivo}</span>
-                    <span class="timeline-pts" style="color:${c}">${pVal > 0 ? '+':''}${pVal}</span>
-                </div>
-            </div>`;
-    });
-    h += `</div>`;
     
-    body.innerHTML = activeSister.detalles.length === 0 ? `<p style="padding:20px; color:#999;">Sin registros.</p>` : h;
+    const detallesOrdenados = [...activeSister.detalles].reverse();
+    
+    if (detallesOrdenados.length === 0) {
+        h = `<p style="padding:20px; color:#999;">Sin registros de puntos.</p>`;
+    } else {
+        detallesOrdenados.forEach(d => {
+            const pVal = parseFloat(d.Puntos) || 0;
+            const motivo = d.Motivo || 'Sin motivo';
+            const fechaVal = d.Fecha;
+            
+            const c = pVal >= 0 ? "#2e7d32" : "#c62828";
+            let fechaSimple = '---';
+            if (fechaVal) {
+                try {
+                    const fechaDate = new Date(fechaVal);
+                    if (!isNaN(fechaDate.getTime())) {
+                        fechaSimple = fechaDate.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+                    }
+                } catch(e) { }
+            }
+            
+            h += `
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <span class="timeline-date">${fechaSimple}</span>
+                    <div class="timeline-content" style="cursor:default;">
+                        <span class="timeline-motivo">${motivo}</span>
+                        <span class="timeline-pts" style="color:${c}">${pVal > 0 ? '+' : ''}${pVal}</span>
+                    </div>
+                </div>`;
+        });
+        h += `</div>`;
+    }
+    
+    body.innerHTML = h;
     document.getElementById('historyModal').classList.remove('hidden');
 }
 
 function openGlobalHistory() {
     const body = document.getElementById('globalHistBody');
+    
+    if (globalHistoryData.length === 0) {
+        body.innerHTML = `<p style="padding:20px; color:#999;">Sin puntos asignados globalmente.</p>`;
+        document.getElementById('globalHistoryModal').classList.remove('hidden');
+        return;
+    }
+    
     let h = `<div class="timeline">`;
     
     [...globalHistoryData].reverse().forEach((d, index) => {
-        const pVal = parseFloat(d.Puntos || d.puntos || 0);
-        const motivo = d.Motivo || d.motivo || 'Sin motivo';
-        const fechaVal = d.Fecha || d.fecha;
-
-        if (pVal === 0 && motivo === 'Sin motivo') return;
-
+        const pVal = parseFloat(d.Puntos) || 0;
+        const motivo = d.Motivo || 'Sin motivo';
+        const fechaVal = d.Fecha;
+        
         const c = pVal >= 0 ? "#2e7d32" : "#c62828";
-        const fechaSimple = fechaVal ? new Date(fechaVal).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }) : '---';
+        let fechaSimple = '---';
+        if (fechaVal) {
+            try {
+                const fechaDate = new Date(fechaVal);
+                if (!isNaN(fechaDate.getTime())) {
+                    fechaSimple = fechaDate.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+                }
+            } catch(e) { }
+        }
         
         const msjWhatsApp = encodeURIComponent(`¡Hola mi hermana! Quería avisar que no me sumaron mis Jeropoints correspondientes a: "${motivo}" de la fecha ${fechaSimple}.`);
         
@@ -304,12 +317,10 @@ function openGlobalHistory() {
             <div class="timeline-item">
                 <div class="timeline-dot"></div>
                 <span class="timeline-date">${fechaSimple}</span>
-                
                 <div class="timeline-content" onclick="toggleReclamo(${index})">
                     <span class="timeline-motivo">${motivo}</span>
-                    <span class="timeline-pts" style="color:${c}">${pVal > 0 ? '+':''}${pVal}</span>
+                    <span class="timeline-pts" style="color:${c}">${pVal > 0 ? '+' : ''}${pVal}</span>
                 </div>
-                
                 <div id="reclamo-${index}" class="reclamo-box">
                     <a href="https://wa.me/+595981614237?text=${msjWhatsApp}" target="_blank" class="btn-whatsapp-mini">
                         ¡No me sumaron este punto! 📲
@@ -319,12 +330,13 @@ function openGlobalHistory() {
     });
     
     h += `</div>`;
-    body.innerHTML = globalHistoryData.length === 0 ? `<p style="padding:20px; color:#999;">Sin puntos asignados.</p>` : h;
+    body.innerHTML = h;
     document.getElementById('globalHistoryModal').classList.remove('hidden');
 }
 
 function toggleReclamo(index) {
-    document.getElementById(`reclamo-${index}`).classList.toggle('show');
+    const el = document.getElementById(`reclamo-${index}`);
+    if (el) el.classList.toggle('show');
 }
 
 function openRules(t) {
