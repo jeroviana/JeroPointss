@@ -190,21 +190,21 @@ async function init() {
         const r = await fetch(SCRIPT_URL);
         const rawData = await r.json();
         
-        // Procesamos los datos con seguridad (Failsafe)
         sisters = rawData.map(s => {
-            // Extraemos los detalles saltando las primeras 4 filas
-            const detallesFiltrados = s.detalles ? s.detalles.slice(4) : [];
+            // Saltamos las filas de configuracion (contraseña, foto, etc)
+            const dSlices = s.detalles ? s.detalles.slice(4) : [];
             
-            // Calculamos el total asegurándonos de que los valores vacíos sean 0
-            const nuevoTotal = detallesFiltrados.reduce((acc, curr) => {
-                const p = parseFloat(curr.Puntos);
+            // EL FIX: Buscamos tanto "Puntos" como "puntos" para que sume correctamente
+            const totalCalc = dSlices.reduce((acc, curr) => {
+                const valorPuntos = curr.Puntos || curr.puntos || 0;
+                const p = parseFloat(valorPuntos);
                 return acc + (isNaN(p) ? 0 : p);
             }, 0);
 
             return {
                 ...s,
-                detalles: detallesFiltrados,
-                totalPuntos: nuevoTotal
+                detalles: dSlices,
+                totalPuntos: totalCalc
             };
         });
         
@@ -241,17 +241,12 @@ function render() {
     });
 
     const list = document.getElementById('list');
-    const puntosTercerLugar = sorted[2] ? sorted[2].totalPuntos : null;
     const hermanasRestantes = sorted.slice(3);
     
     hermanasRestantes.forEach((s, i) => {
-        const posicionReal = i + 4; 
-        const esEmpateBronce = s.totalPuntos === puntosTercerLugar;
-        const medalla = esEmpateBronce ? ' 🥉' : '';
-
         list.innerHTML += `
             <div class="sister-card" onclick="showSisterHistory('${s.nombre}')">
-                <span><strong style="color:var(--rosa-fuerte)">${posicionReal}.</strong> ${s.nombre}${medalla}</span>
+                <span><strong style="color:var(--rosa-fuerte)">${i + 4}.</strong> ${s.nombre}</span>
                 <span style="font-weight:bold; color:var(--rosa-fuerte)">${s.totalPuntos} pts</span>
             </div>`;
     });
@@ -264,25 +259,28 @@ function showSisterHistory(n) {
     
     let h = `<div class="timeline">`;
     [...activeSister.detalles].reverse().forEach(d => {
-        const pVal = parseFloat(d.Puntos) || 0;
+        const pVal = parseFloat(d.Puntos || d.puntos || 0);
+        const motivo = d.Motivo || d.motivo || 'Sin motivo';
+        const fechaVal = d.Fecha || d.fecha;
+        
+        if (pVal === 0 && motivo === 'Sin motivo') return;
+
         const c = pVal >= 0 ? "#2e7d32" : "#c62828";
-        const fechaSimple = d.fecha ? new Date(d.fecha).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }) : 'S/F';
+        const fechaSimple = fechaVal ? new Date(fechaVal).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }) : '---';
         
         h += `
             <div class="timeline-item">
                 <div class="timeline-dot"></div>
                 <span class="timeline-date">${fechaSimple}</span>
                 <div class="timeline-content" style="cursor:default;">
-                    <span class="timeline-motivo">${d.motivo || 'Sin motivo'}</span>
+                    <span class="timeline-motivo">${motivo}</span>
                     <span class="timeline-pts" style="color:${c}">${pVal > 0 ? '+':''}${pVal}</span>
                 </div>
             </div>`;
     });
     h += `</div>`;
     
-    if(activeSister.detalles.length === 0) h = `<p style="padding:20px; color:#999;">Aún no hay registros en el libro.</p>`;
-    
-    body.innerHTML = h;
+    body.innerHTML = activeSister.detalles.length === 0 ? `<p style="padding:20px; color:#999;">Sin registros.</p>` : h;
     document.getElementById('historyModal').classList.remove('hidden');
 }
 
@@ -291,11 +289,16 @@ function openGlobalHistory() {
     let h = `<div class="timeline">`;
     
     [...globalHistoryData].reverse().forEach((d, index) => {
-        const pVal = parseFloat(d.Puntos) || 0;
+        const pVal = parseFloat(d.Puntos || d.puntos || 0);
+        const motivo = d.Motivo || d.motivo || 'Sin motivo';
+        const fechaVal = d.Fecha || d.fecha;
+
+        if (pVal === 0 && motivo === 'Sin motivo') return;
+
         const c = pVal >= 0 ? "#2e7d32" : "#c62828";
-        const fechaSimple = d.fecha ? new Date(d.fecha).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }) : 'S/F';
+        const fechaSimple = fechaVal ? new Date(fechaVal).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }) : '---';
         
-        const msjWhatsApp = encodeURIComponent(`¡Hola mi hermana! Quería avisar que no me sumaron mis Jeropoints correspondientes a: "${d.motivo}" de la fecha ${fechaSimple}.`);
+        const msjWhatsApp = encodeURIComponent(`¡Hola mi hermana! Quería avisar que no me sumaron mis Jeropoints correspondientes a: "${motivo}" de la fecha ${fechaSimple}.`);
         
         h += `
             <div class="timeline-item">
@@ -303,7 +306,7 @@ function openGlobalHistory() {
                 <span class="timeline-date">${fechaSimple}</span>
                 
                 <div class="timeline-content" onclick="toggleReclamo(${index})">
-                    <span class="timeline-motivo">${d.motivo || 'Sin motivo'}</span>
+                    <span class="timeline-motivo">${motivo}</span>
                     <span class="timeline-pts" style="color:${c}">${pVal > 0 ? '+':''}${pVal}</span>
                 </div>
                 
@@ -316,10 +319,7 @@ function openGlobalHistory() {
     });
     
     h += `</div>`;
-    
-    if(globalHistoryData.length === 0) h = `<p style="padding:20px; color:#999;">Todavía no se asignaron puntos.</p>`;
-    
-    body.innerHTML = h;
+    body.innerHTML = globalHistoryData.length === 0 ? `<p style="padding:20px; color:#999;">Sin puntos asignados.</p>` : h;
     document.getElementById('globalHistoryModal').classList.remove('hidden');
 }
 
@@ -332,21 +332,18 @@ function openRules(t) {
     document.getElementById('rulesTitle').innerText = isE ? "Cómo ganar puntos" : "Cómo perder puntos";
     document.getElementById('rulesTitle').style.color = isE ? "#2e7d32" : "#c62828";
     
-    const earnRules = [
+    const rulesToRender = isE ? [
         { desc: "Destacar en trabajo", pts: "+ 5", colorBorde: "var(--rosa-principal)" },
         { desc: "Saber parlamento de memoria en una publica (largo)", pts: "+ 50", colorBorde: "var(--dorado)" },
         { desc: "Participar de las dinámicas", pts: "+ 10", colorBorde: "var(--rosa-fuerte)" },
         { desc: "Participar de una actividad de la gran logia", pts: "+ 10", colorBorde: "var(--rosa-fuerte)" },
         { desc: "Participar de una actividad realizada un día diferente a sábado", pts: "+ 10", colorBorde: "var(--rosa-fuerte)" }
-    ];
-    
-    const loseRules = [
+    ] : [
         { desc: "Ausencia injustificada", pts: "- 10" },
         { desc: "No participar de una dinámica obligatoria", pts: "- 5" },
         { desc: "Interrumpir", pts: "- 5" }
     ];
     
-    const rulesToRender = isE ? earnRules : loseRules;
     const badgeClass = isE ? "badge-pos" : "badge-neg";
     
     let htmlContent = `<div class="lista-reglas">`;
