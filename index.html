@@ -189,15 +189,23 @@ let globalHistoryData = [];
 async function init() {
     try {
         const r = await fetch(SCRIPT_URL);
-        sisters = await r.json();
+        const rawData = await r.json();
+        
+        // Modificación clave: Aplicamos .slice(4) a los detalles de cada objeto para saltar metadatos (Filas 2, 3, 4 y 5)
+        sisters = rawData.map(s => ({
+            ...s,
+            detalles: s.detalles.slice(4),
+            // Recalculamos el total de puntos basándonos solo en los datos desde la fila 6
+            totalPuntos: s.detalles.slice(4).reduce((acc, curr) => acc + (Number(curr.puntos) || 0), 0)
+        }));
         
         // 1. Encontrar a la "hermana impostora" que en realidad es la columna de Puntos
         const colPuntos = sisters.find(s => s.nombre.toLowerCase().includes('punto'));
         if (colPuntos) {
-            globalHistoryData = colPuntos.detalles; // Guardamos su info para el historial definitivo
+            globalHistoryData = colPuntos.detalles; 
         }
 
-        // 2. Filtrar el ranking para que solo queden las verdaderas chicas (quitando la col "Puntos")
+        // 2. Filtrar el ranking para que solo queden las verdaderas chicas
         realSisters = sisters.filter(s => !s.nombre.toLowerCase().includes('punto'));
         
         render();
@@ -241,7 +249,7 @@ function render() {
     });
 }
 
-// Historial Personal (Igual que antes)
+// Historial Personal
 function showSisterHistory(n) {
     const activeSister = realSisters.find(s => s.nombre === n);
     const body = document.getElementById('histBody');
@@ -270,7 +278,7 @@ function showSisterHistory(n) {
     document.getElementById('historyModal').classList.remove('hidden');
 }
 
-// Historial DEFINITIVO (El nuevo modal)
+// Historial DEFINITIVO
 function openGlobalHistory() {
     const body = document.getElementById('globalHistBody');
     let h = `<div class="timeline">`;
@@ -279,7 +287,6 @@ function openGlobalHistory() {
         const c = d.puntos >= 0 ? "#2e7d32" : "#c62828";
         const fechaSimple = new Date(d.fecha).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
         
-        // Texto que ya incluye el motivo y la fecha exactos para que la hermana no tenga que escribir nada
         const msjWhatsApp = encodeURIComponent(`¡Hola mi hermana! Quería avisar que no me sumaron mis Jeropoints correspondientes a: "${d.motivo}" de la fecha ${fechaSimple}.`);
         
         h += `
@@ -308,7 +315,6 @@ function openGlobalHistory() {
     document.getElementById('globalHistoryModal').classList.remove('hidden');
 }
 
-// Función para mostrar/ocultar el botón de reclamo
 function toggleReclamo(index) {
     document.getElementById(`reclamo-${index}`).classList.toggle('show');
 }
