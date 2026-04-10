@@ -197,7 +197,7 @@ async function init() {
             
             // Calculamos el total asegurándonos de que los valores vacíos sean 0
             const nuevoTotal = detallesFiltrados.reduce((acc, curr) => {
-                const p = parseFloat(curr.puntos);
+                const p = parseFloat(curr.Puntos);
                 return acc + (isNaN(p) ? 0 : p);
             }, 0);
 
@@ -264,7 +264,7 @@ function showSisterHistory(n) {
     
     let h = `<div class="timeline">`;
     [...activeSister.detalles].reverse().forEach(d => {
-        const pVal = parseFloat(d.puntos) || 0;
+        const pVal = parseFloat(d.Puntos) || 0;
         const c = pVal >= 0 ? "#2e7d32" : "#c62828";
         const fechaSimple = d.fecha ? new Date(d.fecha).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }) : 'S/F';
         
@@ -291,7 +291,7 @@ function openGlobalHistory() {
     let h = `<div class="timeline">`;
     
     [...globalHistoryData].reverse().forEach((d, index) => {
-        const pVal = parseFloat(d.puntos) || 0;
+        const pVal = parseFloat(d.Puntos) || 0;
         const c = pVal >= 0 ? "#2e7d32" : "#c62828";
         const fechaSimple = d.fecha ? new Date(d.fecha).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }) : 'S/F';
         
