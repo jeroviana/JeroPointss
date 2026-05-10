@@ -346,13 +346,16 @@ function openRules(t) {
     
     const rulesToRender = isE ? [
         { desc: "Destacar en trabajo", pts: "+ 5", colorBorde: "var(--rosa-principal)" },
-        { desc: "Saber parlamento de memoria en una publica (largo)", pts: "+ 50", colorBorde: "var(--dorado)" },
+        { desc: "Saber parlamento de memoria en una iniciación", pts: "+ 30", colorBorde: "var(--dorado)" },
+        { desc: "Saber parlamento de memoria en una ceremonia pública", pts: "+ 15", colorBorde: "var(--dorado)" },
+        { desc: "Aportar para actividades de recaudación", pts: "+ 10", colorBorde: "var(--dorado)" },
         { desc: "Participar de las dinámicas", pts: "+ 10", colorBorde: "var(--rosa-fuerte)" },
         { desc: "Participar de una actividad de la gran logia", pts: "+ 10", colorBorde: "var(--rosa-fuerte)" },
         { desc: "Participar de una actividad realizada un día diferente a sábado", pts: "+ 10", colorBorde: "var(--rosa-fuerte)" }
     ] : [
         { desc: "Ausencia injustificada", pts: "- 10" },
         { desc: "No participar de una dinámica obligatoria", pts: "- 5" },
+        { desc: "Comportarse inapropiadamente mientras se representa a la asamblea", pts: "- 10" },
         { desc: "Interrumpir", pts: "- 5" }
     ];
     
